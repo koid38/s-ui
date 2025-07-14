@@ -1,11 +1,10 @@
 package core
 
 import (
-	"s-ui/logger"
-	"s-ui/util/common"
+       "s-ui/logger"
+       "s-ui/util/common"
 
-	"github.com/sagernet/sing-box/adapter"
-	"github.com/sagernet/sing-box/option"
+       "github.com/sagernet/sing-box/option"
 )
 
 func (c *Core) AddInbound(config []byte) error {
@@ -53,17 +52,13 @@ func (c *Core) AddOutbound(config []byte) error {
 		return err
 	}
 
-	outboundCtx := adapter.WithContext(c.GetCtx(), &adapter.InboundContext{
-		Outbound: outbound_config.Tag,
-	})
-
-	err = outbound_manager.Create(
-		outboundCtx,
-		router,
-		factory.NewLogger("outbound/"+outbound_config.Type+"["+outbound_config.Tag+"]"),
-		outbound_config.Tag,
-		outbound_config.Type,
-		outbound_config.Options)
+       err = outbound_manager.Create(
+               c.GetCtx(),
+               router,
+               factory.NewLogger("outbound/"+outbound_config.Type+"["+outbound_config.Tag+"]"),
+               outbound_config.Tag,
+               outbound_config.Type,
+               outbound_config.Options)
 	if err != nil {
 		return err
 	}

@@ -1,12 +1,11 @@
 package core
 
 import (
-	"context"
-	"fmt"
-	"io"
-	"os"
-	"s-ui/util/common"
-	"time"
+       "context"
+       "io"
+       "os"
+       "s-ui/util/common"
+       "time"
 
 	"github.com/sagernet/sing-box/adapter"
 	"github.com/sagernet/sing-box/adapter/endpoint"
@@ -182,20 +181,13 @@ func NewBox(options Options) (*Box, error) {
 		} else {
 			tag = F.ToString(i)
 		}
-		outboundCtx := ctx
-		if tag != "" {
-			// TODO: remove this
-			outboundCtx = adapter.WithContext(outboundCtx, &adapter.InboundContext{
-				Outbound: tag,
-			})
-		}
-		err = outboundManager.Create(
-			outboundCtx,
-			router,
-			logFactory.NewLogger(F.ToString("outbound/", outboundOptions.Type, "[", tag, "]")),
-			tag,
-			outboundOptions.Type,
-			outboundOptions.Options,
+               err = outboundManager.Create(
+                       ctx,
+                       router,
+                       logFactory.NewLogger(F.ToString("outbound/", outboundOptions.Type, "[", tag, "]")),
+                       tag,
+                       outboundOptions.Type,
+                       outboundOptions.Options,
 		)
 		if err != nil {
 			return nil, common.NewError("initialize outbound["+F.ToString(i)+"] "+tag, err)
@@ -262,39 +254,23 @@ func NewBox(options Options) (*Box, error) {
 }
 
 func (s *Box) PreStart() error {
-	err := s.preStart()
-	if err != nil {
-		// TODO: remove catch error
-		defer func() {
-			v := recover()
-			if v != nil {
-				s.logger.Error(err.Error())
-				s.logger.Error("panic on early close: " + fmt.Sprint(v))
-			}
-		}()
-		s.Close()
-		return err
-	}
-	s.logger.Info("sing-box pre-started (", F.Seconds(time.Since(s.createdAt).Seconds()), "s)")
-	return nil
+       err := s.preStart()
+       if err != nil {
+               s.Close()
+               return err
+       }
+       s.logger.Info("sing-box pre-started (", F.Seconds(time.Since(s.createdAt).Seconds()), "s)")
+       return nil
 }
 
 func (s *Box) Start() error {
-	err := s.start()
-	if err != nil {
-		// TODO: remove catch error
-		defer func() {
-			v := recover()
-			if v != nil {
-				s.logger.Debug(err.Error())
-				s.logger.Error("panic on early start: " + fmt.Sprint(v))
-			}
-		}()
-		s.Close()
-		return err
-	}
-	s.logger.Info("sing-box started (", F.Seconds(time.Since(s.createdAt).Seconds()), "s)")
-	return nil
+       err := s.start()
+       if err != nil {
+               s.Close()
+               return err
+       }
+       s.logger.Info("sing-box started (", F.Seconds(time.Since(s.createdAt).Seconds()), "s)")
+       return nil
 }
 
 func (s *Box) preStart() error {
